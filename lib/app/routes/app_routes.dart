@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:github_explorer/features/first_page/presentation/view/screen/first_screen.dart';
 import '../../core/constant/route_names.dart';
 import '../../features/home/presentation/view/screen/home_screen.dart';
+import '../../features/repo_details/presentation/view/screens/repo_details_screen.dart';
 import '../../features/splash_screen/splash_screen.dart';
 
 class AppRoutes {
@@ -19,6 +20,10 @@ class AppRoutes {
     GetPage(
       name: RouteNames.firstScreen,
       page: () => FirstScreen(),
+    ),
+    GetPage(
+      name: RouteNames.repoDetailsScreen,
+      page: () => RepoDetailsScreen(),
     ),
   ];
 }

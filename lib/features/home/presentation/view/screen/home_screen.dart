@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../core/constant/route_names.dart';
 import '../../../../../core/services/api_services/api_services.dart';
 import '../../../data/repositories/home_repository_impl.dart';
 import '../../viewmodels/home_viewmodel.dart';
@@ -80,7 +81,17 @@ class HomeScreen extends StatelessWidget {
                 itemCount: repos.length,
                 itemBuilder: (context, index) {
                   final repo = repos[index];
-                  return _buildRepoCard(repo);
+                //  return _buildRepoCard(repo);
+                  return GestureDetector(
+                    onTap: () {
+                      Get.toNamed(RouteNames.repoDetailsScreen, arguments: {
+                        'username': username,
+                        'repoName': repo.name,
+                      });
+                    },
+                    child: _buildRepoCard(repo),
+                  );
+
                 },
               )
                   : ListView.builder(
@@ -90,7 +101,17 @@ class HomeScreen extends StatelessWidget {
                 itemCount: repos.length,
                 itemBuilder: (context, index) {
                   final repo = repos[index];
-                  return _buildRepoTile(repo);
+                 // return _buildRepoTile(repo);
+                  return GestureDetector(
+                    onTap: () {
+                      Get.toNamed(RouteNames.repoDetailsScreen, arguments: {
+                        'username': username,
+                        'repoName': repo.name,
+                      });
+                    },
+                    child: _buildRepoTile(repo),
+                  );
+
                 },
               ),
             ],
