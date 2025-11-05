@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constant/route_names.dart';
 import '../../viewmodel/first_screen_viewmodel.dart';
 
-
 class FirstScreen extends StatelessWidget {
-  FirstScreen({Key? key}) : super(key: key);
+  FirstScreen({super.key});
 
   final FirstScreenViewModel controller = Get.put(FirstScreenViewModel());
   final TextEditingController usernameController = TextEditingController();
@@ -15,31 +14,35 @@ class FirstScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("GitHub User Finder"),
+        title: Text(
+          "GitHub User Finder",
+          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "Enter a GitHub Username",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             TextField(
               controller: usernameController,
               decoration: InputDecoration(
                 hintText: "e.g. torvalds",
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
-                prefixIcon: const Icon(Icons.person),
+                prefixIcon: Icon(Icons.person, size: 24.sp),
               ),
+              style: TextStyle(fontSize: 16.sp),
               onChanged: (value) => controller.setUsername(value),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             ElevatedButton(
               onPressed: () {
                 if (controller.username.value.isEmpty) {
@@ -47,6 +50,9 @@ class FirstScreen extends StatelessWidget {
                     "Error",
                     "Please enter a username",
                     snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.redAccent,
+                    colorText: Colors.white,
+                    duration: Duration(seconds: 2),
                   );
                 } else {
                   Get.toNamed(RouteNames.home, arguments: {
@@ -55,15 +61,14 @@ class FirstScreen extends StatelessWidget {
                 }
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 40, vertical: 15),
+                padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "View Repositories",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
             ),
           ],

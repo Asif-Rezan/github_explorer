@@ -30,10 +30,10 @@ class HomeViewModel extends GetxController {
     }
   }
 
-  Future<void> loadTheme() async {
-    isDarkMode.value = await themeStorage.getTheme();
-  }
-
+  // Future<void> loadTheme() async {
+  //   isDarkMode.value = await themeStorage.getTheme();
+  // }
+  //
   // Future<void> toggleTheme() async {
   //   isDarkMode.value = await themeStorage.toggleTheme();
   //   Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
