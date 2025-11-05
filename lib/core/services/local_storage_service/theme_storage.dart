@@ -1,28 +1,21 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ThemeStorage {
-  static const _key = "isDarkTheme";
+  static const String _themeKey = "isDarkMode";
+  final GetStorage _box = GetStorage();
 
-  Future<void> saveTheme(bool isDark) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_key, isDark);
-  }
-
-  Future<bool> getTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_key) ?? false;
+  Future<bool> isDarkMode() async {
+    return _box.read(_themeKey) ?? false;
   }
 
   Future<bool> toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final current = prefs.getBool(_key) ?? false;
+    final current = _box.read(_themeKey) ?? false;
     final newTheme = !current;
-    await prefs.setBool(_key, newTheme);
+    await _box.write(_themeKey, newTheme);
     return newTheme;
   }
 
-  Future<void> clearTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
+  Future<void> setTheme(bool isDark) async {
+    await _box.write(_themeKey, isDark);
   }
 }

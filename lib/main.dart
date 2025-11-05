@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:github_explorer/app/config/app_config.dart';
+import 'package:get_storage/get_storage.dart';
 
+import 'app/config/app_config.dart';
 import 'app/routes/app_routes.dart';
 import 'app/themes/app_theme.dart';
+import 'core/controllers/theme_controller.dart';
 import 'core/di/di_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize dependency injection
+  await GetStorage.init();
   await diConfig();
 
-  runApp(const MyApp());
+  // Initialize theme controller
+  final themeController = Get.put(ThemeController());
+
+  runApp(MyApp(themeController: themeController));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ThemeController themeController;
+  const MyApp({super.key, required this.themeController});
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +30,26 @@ class MyApp extends StatelessWidget {
       designSize: const Size(360, 690),
       minTextAdapt: true,
       builder: (context, child) {
-        return GetMaterialApp(
-          title: AppConfig.appName,
-          debugShowCheckedModeBanner: false,
+        return Obx(() {
+          return GetMaterialApp(
+            title: AppConfig.appName,
+            debugShowCheckedModeBanner: false,
 
-          // Theme setup
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.system,
+            // Theme setup
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeController.isDarkMode.value
+                ? ThemeMode.dark
+                : ThemeMode.light,
 
-          // GetX routes
-          initialRoute: AppRoutes.initialRoute,
-          getPages: AppRoutes.getPages,
+            // Routes
+            initialRoute: AppRoutes.initialRoute,
+            getPages: AppRoutes.getPages,
 
-          // Optional: smart management and transitions
-          defaultTransition: Transition.fadeIn,
-          smartManagement: SmartManagement.full,
-        );
+            defaultTransition: Transition.fadeIn,
+            smartManagement: SmartManagement.full,
+          );
+        });
       },
     );
   }

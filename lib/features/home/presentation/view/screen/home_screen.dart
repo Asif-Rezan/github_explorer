@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../../core/constant/route_names.dart';
+import '../../../../../core/controllers/theme_controller.dart';
 import '../../../../../core/services/api_services/api_services.dart';
 import '../../../data/repositories/home_repository_impl.dart';
 import '../../viewmodels/home_viewmodel.dart';
@@ -17,10 +18,8 @@ class HomeScreen extends StatelessWidget {
 
     final viewModel = Get.put(HomeViewModel(HomeRepositoryImpl(ApiService())));
 
-    // Fetch data & load theme once
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.fetchUserData(username);
-      viewModel.loadTheme();
     });
 
     return Obx(() {
@@ -37,10 +36,17 @@ class HomeScreen extends StatelessWidget {
               icon: Icon(isGrid ? Icons.list : Icons.grid_view),
               onPressed: viewModel.toggleView,
             ),
-            // IconButton(
-            //   icon: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
-            //   onPressed: viewModel.toggleTheme,
-            // ),
+            IconButton(
+              icon: Icon(
+                Get.find<ThemeController>().isDarkMode.value
+                    ? Icons.dark_mode
+                    : Icons.light_mode,
+              ),
+              onPressed: () {
+                Get.find<ThemeController>().toggleTheme();
+              },
+            ),
+
           ],
         ),
         body: viewModel.isLoading.value
@@ -81,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                 itemCount: repos.length,
                 itemBuilder: (context, index) {
                   final repo = repos[index];
-                //  return _buildRepoCard(repo);
+
                   return GestureDetector(
                     onTap: () {
                       Get.toNamed(RouteNames.repoDetailsScreen, arguments: {
