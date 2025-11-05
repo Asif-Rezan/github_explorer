@@ -6,6 +6,7 @@ import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/services/api_services/api_services.dart';
 import '../../../data/repositories/repo_details_repository_impl.dart';
 import '../../viewmodels/repo_details_viewmodel.dart';
+import '../../../../../core/controllers/theme_controller.dart';
 
 class RepoDetailsScreen extends StatelessWidget {
   const RepoDetailsScreen({super.key});
@@ -20,28 +21,48 @@ class RepoDetailsScreen extends StatelessWidget {
       RepoDetailsViewModel(RepoDetailsRepositoryImpl(ApiService())),
     );
 
+    final themeController = Get.find<ThemeController>();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.fetchRepoDetails(username, repoName);
     });
 
     return Obx(() {
+      final isDark = themeController.isDarkMode.value;
+
+      final backgroundColor = isDark ? AppColors.backgroundDark : AppColors.background;
+      final cardBackgroundColor = isDark ? AppColors.cardBackgroundDark : AppColors.cardBackground;
+      final textPrimary = isDark ? Colors.white : AppColors.textPrimary;
+      final textSecondary = isDark ? Colors.grey[400]! : AppColors.textSecondary;
+
       final repo = viewModel.repoDetails.value;
 
       return Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           title: Text(
             repoName,
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: textPrimary),
           ),
           elevation: 0,
-          backgroundColor: AppColors.background,
-          foregroundColor: AppColors.textPrimary,
+          backgroundColor: backgroundColor,
+          foregroundColor: textPrimary,
+          actions: [
+            IconButton(
+              icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode, color: textPrimary),
+              onPressed: () => themeController.toggleTheme(),
+            ),
+          ],
         ),
         body: viewModel.isLoading.value
             ? const Center(child: CircularProgressIndicator())
             : repo == null
-            ? const Center(child: Text("No repository details found"))
+            ? Center(
+          child: Text(
+            "No repository details found",
+            style: TextStyle(color: textPrimary),
+          ),
+        )
             : SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
           child: Column(
@@ -51,7 +72,7 @@ class RepoDetailsScreen extends StatelessWidget {
               Text(
                 repo.fullName ?? "",
                 style: TextStyle(
-                    fontSize: 22.sp, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                    fontSize: 22.sp, fontWeight: FontWeight.bold, color: textPrimary),
               ),
               SizedBox(height: 10.h),
 
@@ -59,7 +80,7 @@ class RepoDetailsScreen extends StatelessWidget {
               if (repo.description != null)
                 Text(
                   repo.description!,
-                  style: TextStyle(fontSize: 16.sp, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 16.sp, color: textSecondary),
                 ),
               SizedBox(height: 20.h),
 
@@ -80,12 +101,12 @@ class RepoDetailsScreen extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary),
+                              color: textPrimary),
                         ),
                         SizedBox(height: 4.h),
                         Text(
                           "Owner",
-                          style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
+                          style: TextStyle(fontSize: 14.sp, color: textSecondary),
                         ),
                       ],
                     ),
@@ -95,7 +116,6 @@ class RepoDetailsScreen extends StatelessWidget {
 
               // Stats: Stars, Forks, Watchers
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   _buildStat(Icons.star, AppColors.star, "${repo.stargazersCount ?? 0}"),
                   SizedBox(width: 20.w),
@@ -113,17 +133,17 @@ class RepoDetailsScreen extends StatelessWidget {
                   runSpacing: 10.h,
                   children: [
                     if (repo.language != null)
-                      _buildInfoChip(Icons.code, AppColors.codeLanguage, "Language: ${repo.language}"),
+                      _buildInfoChip(Icons.code, AppColors.codeLanguage, "Language: ${repo.language}", isDark: isDark),
                     if (repo.license != null)
-                      _buildInfoChip(Icons.book, AppColors.license, "License: ${repo.license?.name ?? "N/A"}"),
+                      _buildInfoChip(Icons.book, AppColors.license, "License: ${repo.license?.name ?? "N/A"}", isDark: isDark),
                   ],
                 ),
               SizedBox(height: 25.h),
 
               // Created & Updated
-              _buildInfoRow(Icons.calendar_today, "Created: ${repo.createdAt ?? 'N/A'}"),
+              _buildInfoRow(Icons.calendar_today, "Created: ${repo.createdAt ?? 'N/A'}", textColor: textPrimary),
               SizedBox(height: 8.h),
-              _buildInfoRow(Icons.update, "Last updated: ${repo.updatedAt ?? 'N/A'}"),
+              _buildInfoRow(Icons.update, "Last updated: ${repo.updatedAt ?? 'N/A'}", textColor: textPrimary),
               SizedBox(height: 25.h),
 
               // Topics
@@ -133,15 +153,15 @@ class RepoDetailsScreen extends StatelessWidget {
                   runSpacing: 8.h,
                   children: repo.topics!
                       .map((topic) => Chip(
-                    label: Text(topic, style: TextStyle(fontSize: 14.sp)),
-                    backgroundColor: AppColors.chipBackground,
+                    label: Text(topic, style: TextStyle(fontSize: 14.sp, color: textPrimary)),
+                    backgroundColor: isDark ? AppColors.cardBackgroundDark : AppColors.chipBackground,
                   ))
                       .toList(),
                 ),
               SizedBox(height: 25.h),
 
               // Open Issues
-              _buildInfoRow(Icons.bug_report, "Open Issues: ${repo.openIssuesCount ?? 0}", color: AppColors.bug),
+              _buildInfoRow(Icons.bug_report, "Open Issues: ${repo.openIssuesCount ?? 0}", color: AppColors.bug, textColor: textPrimary),
               SizedBox(height: 25.h),
 
               // Homepage & GitHub URL
@@ -149,13 +169,13 @@ class RepoDetailsScreen extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Homepage:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: AppColors.textPrimary)),
+                    Text("Homepage:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: textPrimary)),
                     SizedBox(height: 4.h),
                     Text(repo.homepage!, style: TextStyle(color: AppColors.link, fontSize: 14.sp)),
                     SizedBox(height: 15.h),
                   ],
                 ),
-              Text("GitHub URL:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: AppColors.textPrimary)),
+              Text("GitHub URL:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: textPrimary)),
               SizedBox(height: 4.h),
               Text(repo.htmlUrl ?? "", style: TextStyle(color: AppColors.link, fontSize: 14.sp)),
             ],
@@ -165,32 +185,29 @@ class RepoDetailsScreen extends StatelessWidget {
     });
   }
 
-  // Helper for stats
   Widget _buildStat(IconData icon, Color color, String value) {
     return Row(
       children: [
         Icon(icon, color: color, size: 20.sp),
         SizedBox(width: 6.w),
-        Text(value, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
+        Text(value, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500)),
       ],
     );
   }
 
-  // Helper for row info
-  Widget _buildInfoRow(IconData icon, String text, {Color? color}) {
+  Widget _buildInfoRow(IconData icon, String text, {Color? color, Color? textColor}) {
     return Row(
       children: [
         Icon(icon, color: color ?? AppColors.iconDefault, size: 18.sp),
         SizedBox(width: 8.w),
         Flexible(
-          child: Text(text, style: TextStyle(fontSize: 14.sp, color: AppColors.textPrimary)),
+          child: Text(text, style: TextStyle(fontSize: 14.sp, color: textColor)),
         ),
       ],
     );
   }
 
-  // Helper for info chip
-  Widget _buildInfoChip(IconData icon, Color color, String text) {
+  Widget _buildInfoChip(IconData icon, Color color, String text, {bool isDark = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
@@ -202,7 +219,7 @@ class RepoDetailsScreen extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 16.sp),
           SizedBox(width: 6.w),
-          Text(text, style: TextStyle(color: AppColors.textPrimary, fontSize: 14.sp)),
+          Text(text, style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary, fontSize: 14.sp)),
         ],
       ),
     );
