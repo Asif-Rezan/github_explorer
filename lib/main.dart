@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:github_explorer/app/config/app_config.dart';
 
 import 'app/routes/app_routes.dart';
 import 'app/themes/app_theme.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'Flutter App',
+          title: AppConfig.appName,
           debugShowCheckedModeBanner: false,
 
           // Theme setup
